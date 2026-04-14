@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "scripts": {
+    "frontend": "npm run dev --prefix Magicdle/frontend",
+    "backend": "npm run dev --prefix Magicdle/backend",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  }
+}

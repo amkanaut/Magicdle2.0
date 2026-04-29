@@ -8,6 +8,27 @@
     "dev": "concurrently \"npm run backend\" \"npm run frontend\""
   },
   "dependencies": {
-    "mongodb": "^7.2.0"
-  }
+    "axios": "^1.15.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongodb": "^7.2.0",
+    "mongoose": "^9.6.0"
+  },
+  "name": "magicdle2.0",
+  "version": "1.0.0",
+  "description": "Magicdle is a daily guessing game for Magic: The Gathering cards.",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amkanaut/Magicdle2.0.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/amkanaut/Magicdle2.0/issues"
+  },
+  "homepage": "https://github.com/amkanaut/Magicdle2.0#readme"
 }

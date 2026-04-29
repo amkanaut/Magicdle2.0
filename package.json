@@ -6,5 +6,8 @@
     "frontend": "npm run dev --prefix Magicdle/frontend",
     "backend": "npm run dev --prefix Magicdle/backend",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "dependencies": {
+    "mongodb": "^7.2.0"
   }
 }

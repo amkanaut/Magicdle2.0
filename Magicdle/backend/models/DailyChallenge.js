@@ -14,8 +14,3 @@ const dailyChallengeSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('DailyChallenge', dailyChallengeSchema);
-
-/**
- * DailyChallenge Model
- * Responsibility: Defines the schema for storing daily Magicdle challenges in MongoDB.
- */

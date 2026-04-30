@@ -10,6 +10,7 @@ const dailyChallengeSchema = new mongoose.Schema({
   set_name: String,
   set_code: String,
   card_type: String,
+  oracle_text: String,
   released_at: Date
 });
 

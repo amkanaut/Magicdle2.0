@@ -5,12 +5,12 @@ const scryfallService = require('../services/scryfallService');
 
 router.get('/', async (req, res) => {
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = Temporal.Now.plainDateISO();
 
     // Check if we already have a challenge for today
     let dailyCard = await DailyChallenge.findOne({ date: today });
 
-    if (!dailyCard) {
+    if (!dailyCard) { // If there already isn't a daily card cached, then call Scryfall API
       console.log(`No daily card found for ${today}. Fetching from Scryfall...`);
       const scryfallCard = await scryfallService.getRandomCard();
 
@@ -25,10 +25,11 @@ router.get('/', async (req, res) => {
         set_name: scryfallCard.set_name,
         set_code: scryfallCard.set,
         card_type: scryfallCard.type_line,
+        oracle_text: scryfallCard.oracle_text,
         released_at: scryfallCard.released_at
       });
 
-      await dailyCard.save();
+      await dailyCard.save(); // Caching?
       console.log(`Saved new daily card: ${dailyCard.card_name}`);
     }
 

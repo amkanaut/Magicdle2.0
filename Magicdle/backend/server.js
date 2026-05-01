@@ -1,7 +1,10 @@
+// require("node:dns/promises").setServers(["1.1.1.1", "8.8.8.8"]);
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,11 +18,13 @@ const dailyRoutes = require('./routes/daily');
 const searchRoutes = require('./routes/search');
 const hintRoutes = require('./routes/hint');
 const archiveRoutes = require('./routes/archive');
+const guessRoutes = require('./routes/guess')
 
 app.use('/api/daily', dailyRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/hint', hintRoutes);
 app.use('/api/archive', archiveRoutes);
+app.use('/api/guess', guessRoutes);
 
 // Database Connection
 mongoose.connect(process.env.MONGODB_URI)

@@ -1,13 +1,8 @@
-import { useState } from 'react'
-import './App.css'
+import GameBoard from './components/GameBoard';
+import './App.css';
 
 function App() {
-  return (
-    <div className="App">
-      <h1>Magicdle 2.0</h1>
-      <p>Placeholder for the daily guessing game.</p>
-    </div>
-  )
+  return <GameBoard />;
 }
 
-export default App
+export default App;

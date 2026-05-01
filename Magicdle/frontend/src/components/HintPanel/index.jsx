@@ -1,16 +1,23 @@
 import React from 'react';
 
-const HintPanel = () => {
+const HintPanel = ({ hintLevel, hintLoading, hintsExhausted, requestHint, status }) => {
+  if (status !== 'playing') return null;
+
+  const label = hintLoading
+    ? 'Loading…'
+    : hintsExhausted
+      ? 'No more hints'
+      : `Hint (${hintLevel} / 6)`;
+
   return (
-    <div className="hint-panel">
-      {/* Displays revealed hints for the daily challenge */}
-    </div>
+    <button
+      className="hint-button"
+      onClick={requestHint}
+      disabled={hintLoading || hintsExhausted}
+    >
+      {label}
+    </button>
   );
 };
 
 export default HintPanel;
-
-/**
- * HintPanel Component
- * Responsibility: Manages the display and progressive revealing of card metadata hints.
- */

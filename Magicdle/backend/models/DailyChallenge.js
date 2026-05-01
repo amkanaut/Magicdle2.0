@@ -6,6 +6,9 @@ const dailyChallengeSchema = new mongoose.Schema({
   card_name: { type: String, required: true },
   image_url: { type: String, required: true },
   mana_cost: String,
+  power: String,       // null for non-creature cards
+  toughness: String,   // null for non-creature cards
+  artist: String,
   rarity: String,
   set_name: String,
   set_code: String,

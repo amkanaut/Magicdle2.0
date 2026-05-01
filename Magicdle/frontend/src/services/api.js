@@ -1,21 +1,30 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+});
 
-const fetchDailyChallenge = async () => {
-  // GET /api/daily
+// Returns { image_url, released_at }
+export const fetchDailyChallenge = async () => {
+  const response = await api.get('/daily');
+  return response.data;
 };
 
-const searchCards = async (query) => {
-  // GET /api/search?q=
+// Returns [{ id, name, set_name, image_url }, ...]
+export const searchCards = async (query) => {
+  if (!query || query.trim().length < 2) return [];
+  const response = await api.get('/search', { params: { q: query } });
+  return response.data;
 };
 
-export default {
-  fetchDailyChallenge,
-  searchCards
+// Returns { correct: bool, hint: 'OLDER'|'NEWER'|null, card_name?: string }
+export const submitGuess = async (guessedName, guessedReleasedAt) => {
+  const response = await api.post('/guess', { guessedName, guessedReleasedAt });
+  return response.data;
 };
 
-/**
- * API Service
- * Responsibility: Centralized location for all network requests to the Magicdle backend.
- */
+// Returns { level, zones: [{ id, label, x, y, w, h }, ...], data: { artist, mana_cost?, ... } }
+export const fetchHint = async (level) => {
+  const response = await api.get('/hint', { params: { level } });
+  return response.data;
+};

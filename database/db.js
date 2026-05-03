@@ -17,7 +17,7 @@ module.exports = {
       await client.connect();
       
       // Specify your database name here
-      dbConnection = client.db('mtg_database');
+      dbConnection = client.db('Magicdle');
       
       console.log('Successfully connected to MongoDB.');
     } catch (error) {

@@ -8,3 +8,5 @@ Magicdle is a daily guessing game for Magic: The Gathering cards.
 - `/frontend`: React + Vite single-page application for the game interface.
 
 React deployed on: https://magicdlefrontend.onrender.com/
+
+### By Amgalan Baasanbat

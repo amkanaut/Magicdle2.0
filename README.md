@@ -4,20 +4,18 @@ Magicdle is a daily guessing game for Magic: The Gathering cards.
 
 ## Project Structure
 
-The project is organized into a monorepo inside the `Magicdle` directory:
-
-- `Magicdle/backend`: Node.js + Express API.
-- `Magicdle/frontend`: React + Vite single-page application.
+- `/backend`: Node.js + Express API for fetching card data from Scryfall and managing daily challenges.
+- `/frontend`: React + Vite single-page application for the game interface.
 
 ## Getting Started
 
-From the root directory, you can run:
+### Backend
+1. `cd backend`
+2. `npm install`
+3. Create a `.env` file based on `.env.example`.
+4. `npm start` or `npm run dev`
 
-1. `npm install` (to install dependencies for the root)
-2. `npm run backend` (to start the backend)
-3. `npm run frontend` (to start the frontend)
-4. `npm run dev` (to start both concurrently)
-
-See `Magicdle/README.md` for more details.
-
-## Project by Amgalan Baasanbat for WEB API Class
+### Frontend
+1. `cd frontend`
+2. `npm install`
+3. `npm run dev`

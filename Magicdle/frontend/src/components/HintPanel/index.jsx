@@ -7,7 +7,7 @@ const HintPanel = ({ hintLevel, hintLoading, hintsExhausted, requestHint, status
     ? 'Loading…'
     : hintsExhausted
       ? 'No more hints'
-      : `Hint (${hintLevel} / 6)`;
+      : `Hint (${hintLevel} / 11)`;
 
   return (
     <button

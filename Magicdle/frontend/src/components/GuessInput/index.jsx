@@ -31,7 +31,7 @@ const GuessInput = ({ onGuess, disabled }) => {
   }, [query]);
 
   const handleSelect = (card) => {
-    onGuess(card.name, card.released_at);
+    onGuess(card.name);
     setQuery('');
     setResults([]);
     setIsOpen(false);
@@ -84,14 +84,13 @@ const GuessInput = ({ onGuess, disabled }) => {
         <ul className="guess-input__dropdown" role="listbox">
           {results.map((card, i) => (
             <li
-              key={card.id}
+              key={card.name}
               role="option"
               aria-selected={i === activeIndex}
               className={`guess-input__option${i === activeIndex ? ' guess-input__option--active' : ''}`}
               onMouseDown={() => handleSelect(card)}
             >
               <span className="guess-input__name">{card.name}</span>
-              <span className="guess-input__set">{card.set_name}</span>
             </li>
           ))}
         </ul>

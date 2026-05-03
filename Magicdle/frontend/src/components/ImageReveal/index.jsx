@@ -1,14 +1,27 @@
 import React from 'react';
 
 // Matches ZONES.artist in backend/routes/hint.js — always visible
-const ARTIST_ZONE = { id: 'artist', x: 7, y: 92, w: 62, h: 4 };
+const ARTIST_ZONE = { id: 'artist', x: 12, y: 95, w: 34, h: 4 };
 
-const ImageReveal = ({ imageUrl, zones }) => {
+const ImageReveal = ({ imageUrl, zones, revealed }) => {
   // zones comes from hints?.zones (includes artist + unlocked sections).
   // Before any hint is requested, fall back to just the artist strip.
   const allZones = zones ?? [ARTIST_ZONE];
 
   if (!imageUrl) return <div className="image-reveal image-reveal--empty" />;
+
+  // Full reveal on correct guess — skip blur entirely
+  if (revealed) {
+    return (
+      <div className="image-reveal">
+        <img
+          src={imageUrl}
+          alt="Daily Magic: The Gathering card"
+          className="card-img"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="image-reveal">
@@ -20,9 +33,9 @@ const ImageReveal = ({ imageUrl, zones }) => {
       />
 
       {/*
-        SVG clip path — invisible element that defines which regions to cut
-        through the blur. clipPathUnits="objectBoundingBox" means x/y/w/h
-        are fractions of the clipped element's bounding box (so divide % by 100).
+        SVG clip path — defines which regions to cut through the blur.
+        clipPathUnits="objectBoundingBox" means x/y/w/h are fractions of
+        the clipped element's bounding box (divide % by 100).
       */}
       <svg
         width="0"

@@ -2,14 +2,21 @@ const axios = require('axios');
 
 const SCRYFALL_BASE_URL = process.env.SCRYFALL_BASE_URL || 'https://api.scryfall.com';
 
+// In-memory cache for card lookups so repeated guesses of the same card
+// name don't hit Scryfall twice. Clears on server restart, which is fine.
+const cardNameCache = new Map();
+
 const getRandomCard = async () => {
   try {
-    const response = await axios.get(`${SCRYFALL_BASE_URL}/cards/random`);
+    const cutoff = new Date();
+    cutoff.setFullYear(cutoff.getFullYear() - 5);
+    const cutoffDate = cutoff.toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+    const response = await axios.get(`${SCRYFALL_BASE_URL}/cards/random`, {
+      params: { q: `date>=${cutoffDate} lang:en -is:token -is:digital is:paper -t:basic` },
+    });
     const card = response.data;
 
-    // Transform raw Scryfall data into only what Magicdle needs.
-    // Double-faced cards (card_faces) don't have top-level image_uris,
-    // so we fall back to the first face.
     return {
       id:          card.id,
       name:        card.name,
@@ -20,9 +27,9 @@ const getRandomCard = async () => {
       set_name:    card.set_name,
       set_code:    card.set,
       rarity:      card.rarity,
-      released_at: card.released_at, // "YYYY-MM-DD" string from Scryfall
+      released_at: card.released_at,
       artist:      card.artist      ?? card.card_faces?.[0]?.artist ?? '',
-      power:       card.power       ?? null, // only present on creature cards
+      power:       card.power       ?? null,
       toughness:   card.toughness   ?? null,
     };
   } catch (error) {
@@ -31,33 +38,44 @@ const getRandomCard = async () => {
   }
 };
 
-const searchCards = async (query) => {
+// Uses Scryfall's dedicated autocomplete endpoint — responds from the first
+// character, returns up to 20 prefix-matched card names very quickly.
+const autocompleteCards = async (query) => {
   try {
-    // `unique=cards` so duplicates of same card removed if they have multiple versions/reprints
-    const response = await axios.get(`${SCRYFALL_BASE_URL}/cards/search`, {
-      params: {
-        q:      `!"${query}"`, // exact name match prefix, gives best autocomplete results
-        unique: 'cards',
-        order:  'name',
-      },
+    const response = await axios.get(`${SCRYFALL_BASE_URL}/cards/autocomplete`, {
+      params: { q: query, include_extras: false },
     });
-
-    // Only return what the autocomplete dropdown needs
-// In scryfallService.js searchCards map:
-  return response.data.data.map(card => ({
-    id:           card.id,
-    name:         card.name,
-    set_name:     card.set_name,
-    released_at:  card.released_at, // needed for guess comparison
-    image_url:    card.image_uris?.small ?? card.card_faces?.[0]?.image_uris?.small ?? '',
-  }));
+    // response.data.data is a plain string[] of card names
+    return response.data.data.map(name => ({ name }));
   } catch (error) {
-    if (error.response?.status === 404) {
-      return []; // No cards matched — not a server error, just an empty result
-    }
-    console.error('Error searching cards on Scryfall:', error.message);
+    if (error.response?.status === 404) return [];
+    console.error('Error in autocomplete:', error.message);
     throw error;
   }
 };
 
-module.exports = { getRandomCard, searchCards };
+// Fetches a single card by its exact name — used by the guess route to get
+// released_at without trusting the client to supply it.
+const getCardByName = async (name) => {
+  const cacheKey = name.toLowerCase();
+  if (cardNameCache.has(cacheKey)) return cardNameCache.get(cacheKey);
+
+  try {
+    const response = await axios.get(`${SCRYFALL_BASE_URL}/cards/named`, {
+      params: { exact: name },
+    });
+    const card = response.data;
+    const result = {
+      name:        card.name,
+      released_at: card.released_at,
+    };
+    cardNameCache.set(cacheKey, result);
+    return result;
+  } catch (error) {
+    if (error.response?.status === 404) return null; // unknown card name
+    console.error('Error fetching card by name:', error.message);
+    throw error;
+  }
+};
+
+module.exports = { getRandomCard, autocompleteCards, getCardByName };

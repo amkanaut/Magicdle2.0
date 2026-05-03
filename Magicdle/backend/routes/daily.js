@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
     res.json({
       image_url:   dailyCard.image_url,
       released_at: dailyCard.released_at,
-      // We send released_at so the frontend can do OLDER/NEWER comparison
+      // send released_at so the frontend can do OLDER/NEWER comparison
       // after the backend validates the guess. See /api/guess.
     });
   } catch (error) {

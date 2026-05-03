@@ -19,3 +19,5 @@ From the root directory, you can run:
 4. `npm run dev` (to start both concurrently)
 
 See `Magicdle/README.md` for more details.
+
+## Project by Amgalan Baasanbat for WEB API Class

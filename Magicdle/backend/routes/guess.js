@@ -1,19 +1,19 @@
 const express = require('express');
 const router  = express.Router();
-const DailyChallenge = require('../models/DailyChallenge');
+const DailyChallenge  = require('../models/DailyChallenge');
+const scryfallService = require('../services/scryfallService');
 
 router.post('/', async (req, res) => {
   try {
-    const { guessedName, guessedReleasedAt } = req.body;
-    // guessedReleasedAt comes from the autocomplete selection.
-    // When a player picks a card from the dropdown, its releasedAt data will also be stored. 
+    const { guessedName, date } = req.body;
 
-    if (!guessedName || !guessedReleasedAt) {
-      return res.status(400).json({ error: 'guessedName and guessedReleasedAt are required' });
+    if (!guessedName) {
+      return res.status(400).json({ error: 'guessedName is required' });
     }
 
-    const today = new Date().toISOString().split('T')[0];
-    const dailyCard = await DailyChallenge.findOne({ date: today });
+    // Optional date lets archive games validate against the right card.
+    const targetDate = date || new Date().toISOString().split('T')[0];
+    const dailyCard = await DailyChallenge.findOne({ date: targetDate });
 
     if (!dailyCard) {
       return res.status(404).json({ error: 'No daily challenge found for today' });
@@ -23,17 +23,24 @@ router.post('/', async (req, res) => {
 
     let hint = null;
     if (!isCorrect) {
-      const guessedDate  = new Date(guessedReleasedAt);
-      const correctDate  = new Date(dailyCard.released_at);
+      // Look up the guessed card's release date from Scryfall.
+      // The client is not trusted to supply this — they could manipulate it.
+      const guessedCard = await scryfallService.getCardByName(guessedName);
 
-      // If the guessed card is older than the answer, tell the player to guess NEWER
+      if (!guessedCard) {
+        return res.status(404).json({ error: `Card "${guessedName}" not found` });
+      }
+
+      const guessedDate = new Date(guessedCard.released_at);
+      const correctDate = new Date(dailyCard.released_at);
+
+      // Guessed card older than answer → tell player to go NEWER
       hint = guessedDate < correctDate ? 'NEWER' : 'OLDER';
     }
 
     res.json({
       correct: isCorrect,
       hint,
-      // Only reveal the card name if the guess was correct
       ...(isCorrect && { card_name: dailyCard.card_name }),
     });
   } catch (error) {

@@ -10,21 +10,39 @@ export const fetchDailyChallenge = async () => {
   return response.data;
 };
 
-// Returns [{ id, name, set_name, image_url }, ...]
+// Returns { image_url, released_at } for a past date
+export const fetchArchiveChallenge = async (date) => {
+  const response = await api.get(`/archive/${date}`);
+  return response.data;
+};
+
+// Returns [{ date, image_url, card_name }, ...] newest first
+export const fetchArchiveList = async () => {
+  const response = await api.get('/archive');
+  return response.data;
+};
+
+// Returns [{ name }, ...] — release date is looked up server-side on guess
 export const searchCards = async (query) => {
-  if (!query || query.trim().length < 2) return [];
+  if (!query || query.trim().length < 1) return [];
   const response = await api.get('/search', { params: { q: query } });
   return response.data;
 };
 
 // Returns { correct: bool, hint: 'OLDER'|'NEWER'|null, card_name?: string }
-export const submitGuess = async (guessedName, guessedReleasedAt) => {
-  const response = await api.post('/guess', { guessedName, guessedReleasedAt });
+// Pass date for archive games so the backend checks the right card.
+export const submitGuess = async (guessedName, date = null) => {
+  const body = { guessedName };
+  if (date) body.date = date;
+  const response = await api.post('/guess', body);
   return response.data;
 };
 
-// Returns { level, zones: [{ id, label, x, y, w, h }, ...], data: { artist, mana_cost?, ... } }
-export const fetchHint = async (level) => {
-  const response = await api.get('/hint', { params: { level } });
+// Returns { level, zones, data }
+// Pass date for archive games so hints reference the right card.
+export const fetchHint = async (level, date = null) => {
+  const params = { level };
+  if (date) params.date = date;
+  const response = await api.get('/hint', { params });
   return response.data;
 };

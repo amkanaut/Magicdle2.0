@@ -27,7 +27,7 @@ app.use('/api/archive', archiveRoutes);
 app.use('/api/guess', guessRoutes);
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, { dbName: 'Magicdle' })
   .then(() => console.log('Connected to MongoDB'))
   .catch(err => console.error('Could not connect to MongoDB', err));
 
